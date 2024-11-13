@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}MahiruMailings - Главная{% endblock %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">MahiruMailings</h1>
+</div>
+<div class="container">
+    <div class="recommendations my-5">
+        {% if user.is_authenticated %}
+        <h2 class="text-center mb-4">Добро пожаловать, {{ user.username }}!</h2>
+        <div class="card w-50">
+            <h2 class="card-header">Рассылки</h2>
+            <div class="card-body">
+                <h3 class="card-text"><a href="{% url 'mailings_list' %}">Всего рассылок: {{ mailings|length }}</a></h3>
+                <h3 class="card-text">Активных рассылок: {{ mailings.is_active|length }}</h3>
+                <h3 class="card-text"><a href="{% url 'recipients' %}">Уникальных получателей: {{ recipients|length }}</a></h3>
+            </div>
+        </div>
+        {% else %}
+        <h2 class="text-center"><a href="{% url 'login' %}">Войдите в аккаунт</a></h2>
+        <p class="text-center">Чтобы увидеть информацию</p>
+        {% endif %}
+    </div>
+</div>
+{% include 'includes/toast.html'%}
+{% endblock %}
