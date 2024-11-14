@@ -4,6 +4,7 @@ import re
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth import authenticate, login
 
 from .models import User
 
@@ -139,13 +140,15 @@ class LoginForm(AuthenticationForm):
         """
         email = self.cleaned_data.get("username")
         password = self.cleaned_data.get("password")
+        
+        user = authenticate(request=self.request, username=email, password=password)
+        if not user:
+            raise forms.ValidationError("Неверное имя пользователя или пароль")
+        if not user.is_active:
+            raise forms.ValidationError("Пользователь заблокирован")
+        
+        login(self.request, user)
 
-        if email and password:
-            if not User.objects.filter(email=email).exists():
-                raise forms.ValidationError("Неверное имя пользователя или пароль")
-            self.user_cache = User.objects.get(email=email)
-            if not self.user_cache.check_password(password):
-                raise forms.ValidationError("Неверное имя пользователя или пароль")
         return self.cleaned_data
 
     def __init__(self, *args, **kwargs):
@@ -331,3 +334,33 @@ class ProfileForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm
+
+class CustomPasswordResetForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+            
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        # Just check if the email exists in the system (without "unique" validation)
+        if not User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Пользователь с таким email не существует")
+        if not User.objects.get(email=email).is_active:
+            raise forms.ValidationError("Пользователь заблокирован")
+        return email
+
+class CustomSetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+            
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
