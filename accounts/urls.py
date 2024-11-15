@@ -1,11 +1,24 @@
-from django.contrib.auth.views import (LogoutView, PasswordChangeDoneView, PasswordChangeView,
-                                       PasswordResetCompleteView, PasswordResetConfirmView, PasswordResetDoneView,
-                                       PasswordResetView)
+from django.contrib.auth.views import (
+    LogoutView,
+    PasswordChangeDoneView,
+    PasswordChangeView,
+    PasswordResetCompleteView,
+    PasswordResetConfirmView,
+    PasswordResetDoneView,
+    PasswordResetView,
+)
 from django.urls import path
 
 from .forms import CustomPasswordChangeForm, CustomPasswordResetForm, CustomSetPasswordForm
-from .views import (LoginView, ProfileBlockView, ProfileDeleteView, ProfileEditView, ProfileView, RegisterView,
-                    UserListView)
+from .views import (
+    LoginView,
+    ProfileBlockView,
+    ProfileDeleteView,
+    ProfileEditView,
+    ProfileView,
+    RegisterView,
+    UserListView,
+)
 
 urlpatterns = [
     path("", view=UserListView.as_view(), name="users"),

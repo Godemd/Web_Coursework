@@ -18,6 +18,8 @@ class MessageListView(LoginRequiredMixin, ListView):
         if self.request.user.has_perm("messages.view_all_messages"):
             return Message.objects.all()
         return Message.objects.filter(owner=self.request.user)
+
+
 class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     form_class = MessageForm

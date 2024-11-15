@@ -16,6 +16,8 @@ class RecipientListView(LoginRequiredMixin, ListView):
         if self.request.user.has_perm("recipients.view_all_recipients"):
             return Recipient.objects.all()
         return Recipient.objects.filter(owner=self.request.user)
+
+
 class RecipientCreateView(LoginRequiredMixin, CreateView):
     form_class = RecipientForm
     template_name = "recipients/form.html"
